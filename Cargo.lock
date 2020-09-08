@@ -1337,11 +1337,44 @@ dependencies = [
 ]
 
 [[package]]
+name = "frontier-consensus"
+version = "0.1.0"
+dependencies = [
+ "derive_more",
+ "ethereum",
+ "frontier-consensus-primitives",
+ "futures 0.3.5",
+ "log",
+ "parity-scale-codec",
+ "sc-client-api",
+ "sp-api",
+ "sp-block-builder",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-core",
+ "sp-inherents",
+ "sp-runtime",
+ "sp-timestamp",
+ "substrate-prometheus-endpoint",
+]
+
+[[package]]
+name = "frontier-consensus-primitives"
+version = "0.1.0"
+dependencies = [
+ "parity-scale-codec",
+ "sp-core",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "frontier-rpc"
 version = "0.1.0"
 dependencies = [
  "ethereum",
  "ethereum-types",
+ "frontier-consensus",
  "frontier-rpc-core",
  "frontier-rpc-primitives",
  "futures 0.3.5",
@@ -1393,6 +1426,7 @@ dependencies = [
 name = "frontier-template-node"
 version = "2.0.0-dev"
 dependencies = [
+ "frontier-consensus",
  "frontier-rpc",
  "frontier-rpc-primitives",
  "frontier-template-runtime",
@@ -3454,6 +3488,7 @@ dependencies = [
  "ethereum-types",
  "frame-support",
  "frame-system",
+ "frontier-consensus-primitives",
  "frontier-rpc-primitives",
  "libsecp256k1",
  "pallet-balances",
