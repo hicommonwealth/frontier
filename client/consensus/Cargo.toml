@@ -22,5 +22,5 @@ log = "0.4.8"
 futures = { version = "0.3.1", features = ["compat"] }
 sp-timestamp = { version = "2.0.0" }
 derive_more = "0.99.2"
-prometheus-endpoint = { package = "substrate-prometheus-endpoint"}
+prometheus-endpoint = { version = "0.8.0", package = "substrate-prometheus-endpoint" }
 ethereum = { version = "0.5", features = ["with-codec"] }
