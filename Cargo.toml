@@ -119,3 +119,4 @@ sp-version = { git = "https://github.com/paritytech/substrate.git", rev = "4b8c8
 sp-wasm-interface = { git = "https://github.com/paritytech/substrate.git", rev = "4b8c862ae3b0d34ecdc351888469f81704df68e2" }
 substrate-frame-rpc-system = { git = "https://github.com/paritytech/substrate.git", rev = "4b8c862ae3b0d34ecdc351888469f81704df68e2" }
 substrate-prometheus-endpoint = { git = "https://github.com/paritytech/substrate.git", rev = "4b8c862ae3b0d34ecdc351888469f81704df68e2" }
+substrate-test-client = { git = "https://github.com/paritytech/substrate.git", rev = "4b8c862ae3b0d34ecdc351888469f81704df68e2" }

@@ -1593,6 +1593,7 @@ dependencies = [
  "sc-light",
  "sp-api",
  "sp-runtime",
+ "substrate-test-client",
 ]
 
 [[package]]
@@ -6829,6 +6830,33 @@ dependencies = [
  "log",
  "prometheus",
  "tokio 0.2.24",
+]
+
+[[package]]
+name = "substrate-test-client"
+version = "2.0.0"
+source = "git+https://github.com/paritytech/substrate.git?rev=4b8c862ae3b0d34ecdc351888469f81704df68e2#4b8c862ae3b0d34ecdc351888469f81704df68e2"
+dependencies = [
+ "futures 0.1.30",
+ "futures 0.3.8",
+ "hash-db",
+ "hex",
+ "parity-scale-codec",
+ "sc-client-api",
+ "sc-client-db",
+ "sc-consensus",
+ "sc-executor",
+ "sc-light",
+ "sc-service",
+ "serde",
+ "serde_json",
+ "sp-blockchain",
+ "sp-consensus",
+ "sp-core",
+ "sp-keyring",
+ "sp-keystore",
+ "sp-runtime",
+ "sp-state-machine",
 ]
 
 [[package]]
