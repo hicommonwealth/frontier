@@ -168,5 +168,6 @@ fn find_frontier_log<B: BlockT>(
 		}
 	}
 
+	trace!(target: "frontier", "Checking header: {:?}", header);
 	Ok(frontier_log.ok_or(Error::NoPostRuntimeLog)?)
 }

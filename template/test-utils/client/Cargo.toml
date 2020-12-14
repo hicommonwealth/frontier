@@ -14,5 +14,4 @@ sc-executor = { version = "*" }
 sc-light = { version = "*" }
 sc-consensus = { version = "*" }
 sc-client-api = { version = "*" }
-substrate-test-client = { version = "*" }
 frontier-template-runtime = { path = "../../runtime" }
