@@ -25,7 +25,6 @@ use frame_support::{
 };
 use sp_core::{Blake2Hasher, H256};
 use sp_runtime::{
-	Perbill,
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
 };
@@ -44,9 +43,8 @@ impl_outer_dispatch! {
 pub struct Test;
 parameter_types! {
 	pub const BlockHashCount: u64 = 250;
-	pub const MaximumBlockWeight: Weight = 1024;
-	pub const MaximumBlockLength: u32 = 2 * 1024;
-	pub const AvailableBlockRatio: Perbill = Perbill::one();
+	pub BlockWeights: frame_system::limits::BlockWeights = frame_system::limits::BlockWeights::simple_max(1024);
+	pub BlockLength: frame_system::limits::BlockLength = frame_system::limits::BlockLength::max(2 * 1024);
 }
 impl frame_system::Config for Test {
 	type BaseCallFilter = ();
@@ -60,14 +58,10 @@ impl frame_system::Config for Test {
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Header = Header;
 	type Event = ();
+	type BlockWeights = BlockWeights;
+	type BlockLength = BlockLength;
 	type BlockHashCount = BlockHashCount;
-	type MaximumBlockWeight = MaximumBlockWeight;
 	type DbWeight = ();
-	type BlockExecutionWeight = ();
-	type ExtrinsicBaseWeight = ();
-	type MaximumExtrinsicWeight = MaximumBlockWeight;
-	type MaximumBlockLength = MaximumBlockLength;
-	type AvailableBlockRatio = AvailableBlockRatio;
 	type Version = ();
 	type PalletInfo = ();
 	type AccountData = pallet_balances::AccountData<u64>;
