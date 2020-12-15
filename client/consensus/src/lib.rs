@@ -129,23 +129,26 @@ impl<B, I, C> BlockImport<B> for FrontierBlockImport<B, I, C> where
 		let client = self.client.clone();
 
 		if self.enabled {
+			trace!(target: "frontier-consensus", "Log: {:?}", block.header.digest().logs().len());
 			let log = find_frontier_log::<B>(&block.header)?;
 			let hash = block.post_hash();
 
-			match log {
-				ConsensusLog::EndBlock {
-					block_hash, transaction_hashes,
-				} => {
-					aux_schema::write_block_hash(client.as_ref(), block_hash, hash, insert_closure!());
+			if log.is_some() {
+				match log.unwrap() {
+					ConsensusLog::EndBlock {
+						block_hash, transaction_hashes,
+					} => {
+						aux_schema::write_block_hash(client.as_ref(), block_hash, hash, insert_closure!());
 
-					for (index, transaction_hash) in transaction_hashes.into_iter().enumerate() {
-						aux_schema::write_transaction_metadata(
-							transaction_hash,
-							(block_hash, index as u32),
-							insert_closure!(),
-						);
-					}
-				},
+						for (index, transaction_hash) in transaction_hashes.into_iter().enumerate() {
+							aux_schema::write_transaction_metadata(
+								transaction_hash,
+								(block_hash, index as u32),
+								insert_closure!(),
+							);
+						}
+					},
+				}
 			}
 		}
 
@@ -155,7 +158,7 @@ impl<B, I, C> BlockImport<B> for FrontierBlockImport<B, I, C> where
 
 fn find_frontier_log<B: BlockT>(
 	header: &B::Header,
-) -> Result<ConsensusLog, Error> {
+) -> Result<Option<ConsensusLog>, Error> {
 	let mut frontier_log: Option<_> = None;
 	for log in header.digest().logs() {
 		trace!(target: "frontier-consensus", "Checking log {:?}, looking for ethereum block.", log);
@@ -164,9 +167,12 @@ fn find_frontier_log<B: BlockT>(
 			(Some(_), true) =>
 				return Err(Error::MultiplePostRuntimeLogs),
 			(Some(log), false) => frontier_log = Some(log),
-			_ => trace!(target: "frontier-consensus", "Ignoring digest not meant for us"),
+			_ => {
+				trace!(target: "frontier-consensus", "Ignoring digest not meant for Frontier");
+				frontier_log = None;
+			},
 		}
 	}
 
-	Ok(frontier_log.ok_or(Error::NoPostRuntimeLog)?)
+	Ok(frontier_log)
 }
