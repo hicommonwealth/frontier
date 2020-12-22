@@ -24,6 +24,7 @@ use core::{cmp::min, convert::TryFrom};
 use fp_evm::LinearCostPrecompile;
 use evm::{ExitSucceed, ExitError};
 use ed25519_dalek::{PublicKey, Verifier, Signature};
+use frame_support::{debug};
 
 pub struct Ed25519Verify;
 
@@ -41,7 +42,6 @@ impl LinearCostPrecompile for Ed25519Verify {
 		i[..len].copy_from_slice(&input[..len]);
 
 		let mut buf = [0u8; 4];
-
 		let msg = &i[0..32];
 		let pk = PublicKey::from_bytes(&i[32..64])
 			.map_err(|_| ExitError::Other("Public key recover failed".into()))?;
@@ -54,7 +54,6 @@ impl LinearCostPrecompile for Ed25519Verify {
 		} else {
 			buf[3] = 1u8;
 		};
-
 		Ok((ExitSucceed::Returned, buf.to_vec()))
 	}
 }

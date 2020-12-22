@@ -59,15 +59,15 @@ impl LinearCostPrecompile for Modexp {
 		} else {
 			// read the numbers themselves.
 			let mut buf = Vec::with_capacity(max(mod_len, max(base_len, exp_len)));
-			buf.copy_from_slice(&input[0..base_len]);
+			buf.copy_from_slice(&input[96..(96 + base_len)]);
 			let base = BigUint::from_bytes_be(&buf[..base_len]);
 
 			buf = Vec::with_capacity(max(mod_len, max(base_len, exp_len)));
-			buf.copy_from_slice(&input[base_len..base_len + exp_len]);
+			buf.copy_from_slice(&input[(96 + base_len)..(96 + base_len + exp_len)]);
 			let exponent = BigUint::from_bytes_be(&buf[..exp_len]);
 
 			buf = Vec::with_capacity(max(mod_len, max(base_len, exp_len)));
-			buf.copy_from_slice(&input[(base_len + exp_len)..(base_len + exp_len + mod_len)]);
+			buf.copy_from_slice(&input[(96 + base_len + exp_len)..(96 + base_len + exp_len + mod_len)]);
 			let modulus = BigUint::from_bytes_be(&buf[..mod_len]);
 
 			if modulus.is_zero() || modulus.is_one() {
@@ -84,7 +84,7 @@ impl LinearCostPrecompile for Modexp {
 		// output of length and value 1.
 		if bytes.len() <= mod_len {
 			let res_start = mod_len - bytes.len();
-			let mut ret = Vec::with_capacity(bytes.len() - mod_len);
+			let mut ret = Vec::with_capacity(bytes.len() - res_start);
 			ret.copy_from_slice(&bytes[res_start..bytes.len()]);
 			Ok((ExitSucceed::Returned, ret.to_vec()))
 		} else {

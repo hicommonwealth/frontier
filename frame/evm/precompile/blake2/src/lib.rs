@@ -49,12 +49,12 @@ impl LinearCostPrecompile for Blake2F {
 		let rounds: u32 = u32::from_le_bytes(rounds_buf);
 
 		let mut h_buf: [u8; 64] = [0; 64];
-		h_buf.copy_from_slice(&input[4..48]);
+		h_buf.copy_from_slice(&input[4..68]);
 		let mut h = [0u64; 8];
 		let mut ctr = 0;
 		for state_word in &mut h {
 			let mut temp: [u8; 8] = Default::default();
-			temp.copy_from_slice(&h_buf[(ctr + 8)..(ctr + 1) * 8]);
+			temp.copy_from_slice(&h_buf[(ctr * 8)..(ctr + 1) * 8]);
 			*state_word = u64::from_le_bytes(temp).into();
 			ctr += 1;
 		}
@@ -65,7 +65,7 @@ impl LinearCostPrecompile for Blake2F {
 		ctr = 0;
 		for msg_word in &mut m {
 			let mut temp: [u8; 8] = Default::default();
-			temp.copy_from_slice(&m_buf[(ctr + 8)..(ctr + 1) * 8]);
+			temp.copy_from_slice(&m_buf[(ctr * 8)..(ctr + 1) * 8]);
 			*msg_word = u64::from_le_bytes(temp).into();
 			ctr += 1;
 		}
