@@ -178,8 +178,8 @@ impl<B, I, C> BlockImport<B> for FrontierBlockImport<B, I, C> where
 	}
 }
 
-fn find_frontier_log<B: BlockT>(
-	header: &B::Header,
+fn find_frontier_log<BL: BlockT>(
+	header: &BL::Header,
 ) -> Result<Option<ConsensusLog>, Error> {
 	let mut frontier_log: Option<_> = None;
 	for log in header.digest().logs() {
