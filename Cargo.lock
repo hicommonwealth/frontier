@@ -1075,7 +1075,7 @@ dependencies = [
 [[package]]
 name = "ethereum"
 version = "0.5.1"
-source = "git+https://github.com/rust-blockchain/ethereum.git?branch=vorot93/bump-deps#fd138b35616319ae966279f826b29d419832bd88"
+source = "git+https://github.com/rust-blockchain/ethereum.git?branch=master#1327608448511fbb5b0e51f6ec1756fd33b91951"
 dependencies = [
  "ethereum-types",
  "hash-db",
@@ -1112,7 +1112,7 @@ checksum = "f7531096570974c3a9dcf9e4b8e1cede1ec26cf5046219fb3b9d897503b9be59"
 [[package]]
 name = "evm"
 version = "0.20.0"
-source = "git+https://github.com/hicommonwealth/evm.git?branch=jnaviask.primitive-types-0.8#68ff72d69895d83b84304db387db8fce7d751aea"
+source = "git+https://github.com/hicommonwealth/evm.git?branch=jnaviask.primitive-types-0.8#14366a8e0c4ff0c7dd305e482debd6ed5c16378c"
 dependencies = [
  "ethereum",
  "evm-core",
@@ -1129,7 +1129,7 @@ dependencies = [
 [[package]]
 name = "evm-core"
 version = "0.20.0"
-source = "git+https://github.com/hicommonwealth/evm.git?branch=jnaviask.primitive-types-0.8#68ff72d69895d83b84304db387db8fce7d751aea"
+source = "git+https://github.com/hicommonwealth/evm.git?branch=jnaviask.primitive-types-0.8#14366a8e0c4ff0c7dd305e482debd6ed5c16378c"
 dependencies = [
  "parity-scale-codec",
  "primitive-types",
@@ -1139,7 +1139,7 @@ dependencies = [
 [[package]]
 name = "evm-gasometer"
 version = "0.20.0"
-source = "git+https://github.com/hicommonwealth/evm.git?branch=jnaviask.primitive-types-0.8#68ff72d69895d83b84304db387db8fce7d751aea"
+source = "git+https://github.com/hicommonwealth/evm.git?branch=jnaviask.primitive-types-0.8#14366a8e0c4ff0c7dd305e482debd6ed5c16378c"
 dependencies = [
  "evm-core",
  "evm-runtime",
@@ -1149,7 +1149,7 @@ dependencies = [
 [[package]]
 name = "evm-runtime"
 version = "0.20.0"
-source = "git+https://github.com/hicommonwealth/evm.git?branch=jnaviask.primitive-types-0.8#68ff72d69895d83b84304db387db8fce7d751aea"
+source = "git+https://github.com/hicommonwealth/evm.git?branch=jnaviask.primitive-types-0.8#14366a8e0c4ff0c7dd305e482debd6ed5c16378c"
 dependencies = [
  "evm-core",
  "primitive-types",
