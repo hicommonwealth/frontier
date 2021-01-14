@@ -21,24 +21,20 @@ use super::*;
 
 use std::{str::FromStr, collections::BTreeMap};
 use frame_support::{
-	assert_ok, impl_outer_origin, parameter_types, impl_outer_dispatch,
+	assert_ok, impl_outer_origin, parameter_types,
 };
 use sp_core::{Blake2Hasher, H256};
 use sp_runtime::{
 	Perbill,
 	testing::Header,
-	traits::{BlakeTwo256, IdentityLookup},
+	traits::{IdentityLookup},
 };
+
 
 impl_outer_origin! {
 	pub enum Origin for Test where system = frame_system {}
 }
 
-impl_outer_dispatch! {
-	pub enum OuterCall for Test where origin: Origin {
-		self::EVM,
-	}
-}
 
 #[derive(Clone, Eq, PartialEq)]
 pub struct Test;
@@ -48,32 +44,30 @@ parameter_types! {
 	pub const MaximumBlockLength: u32 = 2 * 1024;
 	pub const AvailableBlockRatio: Perbill = Perbill::one();
 }
+
 impl frame_system::Config for Test {
 	type BaseCallFilter = ();
+	type BlockWeights = ();
+	type BlockLength = ();
+	type DbWeight = ();
 	type Origin = Origin;
 	type Index = u64;
 	type BlockNumber = u64;
+	type Call = ();
 	type Hash = H256;
-	type Call = OuterCall;
-	type Hashing = BlakeTwo256;
+	type Hashing = ::sp_runtime::traits::BlakeTwo256;
 	type AccountId = AccountId32;
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Header = Header;
 	type Event = ();
 	type BlockHashCount = BlockHashCount;
-	type MaximumBlockWeight = MaximumBlockWeight;
-	type DbWeight = ();
-	type BlockExecutionWeight = ();
-	type ExtrinsicBaseWeight = ();
-	type MaximumExtrinsicWeight = MaximumBlockWeight;
-	type MaximumBlockLength = MaximumBlockLength;
-	type AvailableBlockRatio = AvailableBlockRatio;
 	type Version = ();
 	type PalletInfo = ();
 	type AccountData = pallet_balances::AccountData<u64>;
 	type OnNewAccount = ();
 	type OnKilledAccount = ();
 	type SystemWeightInfo = ();
+	type SS58Prefix = ();
 }
 
 parameter_types! {
@@ -92,6 +86,7 @@ impl pallet_balances::Config for Test {
 parameter_types! {
 	pub const MinimumPeriod: u64 = 1000;
 }
+
 impl pallet_timestamp::Config for Test {
 	type Moment = u64;
 	type OnTimestampSet = ();
@@ -108,6 +103,10 @@ impl FeeCalculator for FixedGasPrice {
 	}
 }
 
+parameter_types! {
+	pub const ChainId: u32 = 42;
+}
+
 impl Config for Test {
 	type FeeCalculator = FixedGasPrice;
 	type GasWeightMapping = ();
@@ -121,6 +120,7 @@ impl Config for Test {
 
 	type Event = Event<Test>;
 	type Precompiles = ();
+	type ChainId = ChainId;
 }
 
 type System = frame_system::Module<Test>;
