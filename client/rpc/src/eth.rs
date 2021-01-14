@@ -812,6 +812,11 @@ impl<B, C, P, CT, BE, H: ExHashT> EthApiT for EthApi<B, C, P, CT, BE, H> where
 			let mut upper = U256::max_value();
 			let mut mid = upper;
 			let mut best = mid;
+			let mut old_best: U256;
+
+			// if the gas estimation depends on the gas limit, then we want to binary
+			// search until the change is under some threshold. but if not dependent,
+			// we want to stop immediately.
 			let mut change_pct = U256::from(100);
 			let threshold_pct = U256::from(10);
 
@@ -822,12 +827,9 @@ impl<B, C, P, CT, BE, H: ExHashT> EthApiT for EthApi<B, C, P, CT, BE, H> where
 				match calculate_gas_used(test_request) {
 					// if Ok -- try to reduce the gas used
 					Ok(used_gas) => {
+						old_best = best;
 						best = used_gas;
-
-						// if mid == best (gas limit == gas estimated), then our limit (mid) is precisely
-						// the amount of gas needed. so this approximation measures "how close did we come
-						// to estimating exactly?"
-						change_pct = (U256::from(100) * (mid - best)) / mid;
+						change_pct = (U256::from(100) * (old_best - best)) / old_best;
 						upper = mid;
 						mid = (lower + upper + 1) / 2;
 					}
