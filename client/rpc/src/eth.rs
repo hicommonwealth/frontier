@@ -808,37 +808,38 @@ impl<B, C, P, CT, BE, H: ExHashT> EthApiT for EthApi<B, C, P, CT, BE, H> where
 		if cfg!(not(feature = "rpc_binary_search_estimate")) {
 			calculate_gas_used(request)
 		} else {
-			let mut test_request = request.clone();
-			test_request.gas = Some(U256::max_value());
-			let used_gas = calculate_gas_used(test_request)?;
-			let mut fist_request = request.clone();
-			fist_request.gas = Some(used_gas);
-			let first_result = calculate_gas_used(fist_request);
-			match first_result {
-				Ok(used_gas) => {
-					Ok(used_gas)
-				}
+			let mut lower = U256::from(21000);
+			let mut upper = U256::max_value();
+			let mut mid = upper;
+			let mut best = mid;
+			let mut change_pct = U256::from(100);
+			let threshold_pct = U256::from(10);
 
-				Err(_) => {
-					let mut lower = used_gas;
-					let mut upper = used_gas * 64 / 63;
-					let mut mid = upper;
-					let mut best = mid;
-					while lower + 1 < upper {
+			// invariant: lower <= mid <= upper
+			while change_pct > threshold_pct {
+				let mut test_request = request.clone();
+				test_request.gas = Some(mid);
+				match calculate_gas_used(test_request) {
+					// if Ok -- try to reduce the gas used
+					Ok(used_gas) => {
+						best = used_gas;
+
+						// if mid == best (gas limit == gas estimated), then our limit (mid) is precisely
+						// the amount of gas needed. so this approximation measures "how close did we come
+						// to estimating exactly?"
+						change_pct = (U256::from(100) * (mid - best)) / mid;
+						upper = mid;
 						mid = (lower + upper + 1) / 2;
-						let mut test_request = request.clone();
-						test_request.gas = Some(mid);
-						let test_result = calculate_gas_used(test_request);
-						if test_result.is_ok() {
-							upper = mid;
-							best = mid;
-						} else {
-							lower = mid;
-						}
 					}
-					Ok(best)
+
+					// if Err -- we need more gas
+					Err(_) => {
+						lower = mid;
+						mid = (lower + upper + 1) / 2;
+					}
 				}
 			}
+			Ok(best)
 		}
 	}
 
