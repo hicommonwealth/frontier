@@ -19,7 +19,7 @@
 
 extern crate alloc;
 
-use alloc::vec::Vec;
+use alloc::{format, vec::Vec};
 use fp_evm::LinearCostPrecompile;
 use evm::{ExitSucceed, ExitError};
 use num::{BigUint, Zero, One, ToPrimitive, FromPrimitive};
