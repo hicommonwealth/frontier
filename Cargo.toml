@@ -20,11 +20,6 @@ members = [
 ]
 
 [patch.crates-io]
-evm = { git = "https://github.com/hicommonwealth/evm.git", branch = "jnaviask.primitive-types-0.8" }
-evm-runtime = { git = "https://github.com/hicommonwealth/evm.git", branch = "jnaviask.primitive-types-0.8" }
-evm-gasometer = { git = "https://github.com/hicommonwealth/evm.git", branch = "jnaviask.primitive-types-0.8" }
-ethereum = { git = "https://github.com/rust-blockchain/ethereum.git", branch = "master" }
-
 fork-tree = { git = "https://github.com/paritytech/substrate.git", rev = "b2a50198d3fa71959c77d22edb5fdb8c1e74006c" }
 frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", rev = "b2a50198d3fa71959c77d22edb5fdb8c1e74006c" }
 frame-executive = { git = "https://github.com/paritytech/substrate.git", rev = "b2a50198d3fa71959c77d22edb5fdb8c1e74006c" }
