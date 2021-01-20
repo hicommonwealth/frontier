@@ -208,7 +208,7 @@ pub fn new_full(
 				enable_dev_signer,
 				network: network.clone(),
 				pending_transactions: pending.clone(),
-				command_sink: Some(command_sink.clone())
+				command_sink: Some(command_sink.clone()),
 			};
 			crate::rpc::create_full(
 				deps,

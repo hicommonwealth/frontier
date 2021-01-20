@@ -1,6 +1,6 @@
 [package]
 name = "frontier-template-node"
-version = "2.0.0-dev"
+version = "2.0.1-dev"
 authors = ["Parity Technologies <admin@parity.io>"]
 description = "Substrate Node template"
 edition = "2018"
@@ -51,7 +51,7 @@ sp-block-builder = { version = "*" }
 fc-consensus = { path = "../../client/consensus" }
 fp-consensus = { path = "../../primitives/consensus" }
 frontier-template-runtime = { path = "../runtime" }
-fc-rpc = { path = "../../client/rpc" }
+fc-rpc = { path = "../../client/rpc", features = ["rpc_binary_search_estimate"] }
 fp-rpc = { path = "../../primitives/rpc" }
 fc-rpc-core = { path = "../../client/rpc-core" }
 
