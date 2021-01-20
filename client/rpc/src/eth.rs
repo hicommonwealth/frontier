@@ -54,7 +54,6 @@ pub struct EthApi<B: BlockT, C, P, CT, BE, H: ExHashT> {
 	is_authority: bool,
 	signers: Vec<Box<dyn EthSigner>>,
 	pending_transactions: PendingTransactions,
-	minimum_gas_price: u128,
 	_marker: PhantomData<(B, BE)>,
 }
 
@@ -67,7 +66,6 @@ impl<B: BlockT, C, P, CT, BE, H: ExHashT> EthApi<B, C, P, CT, BE, H> {
 		pending_transactions: PendingTransactions,
 		signers: Vec<Box<dyn EthSigner>>,
 		is_authority: bool,
-		minimum_gas_price: u128,
 	) -> Self {
 		Self {
 			client,
@@ -77,7 +75,6 @@ impl<B: BlockT, C, P, CT, BE, H: ExHashT> EthApi<B, C, P, CT, BE, H> {
 			is_authority,
 			signers,
 			pending_transactions,
-			minimum_gas_price,
 			_marker: PhantomData,
 		}
 	}
@@ -586,7 +583,7 @@ impl<B, C, P, CT, BE, H: ExHashT> EthApiT for EthApi<B, C, P, CT, BE, H> where
 
 		let message = ethereum::TransactionMessage {
 			nonce,
-			gas_price: request.gas_price.unwrap_or(U256::from(self.minimum_gas_price)),
+			gas_price: request.gas_price.unwrap_or(U256::from(1)),
 			gas_limit: request.gas.unwrap_or(U256::max_value()),
 			value: request.value.unwrap_or(U256::zero()),
 			input: request.data.map(|s| s.into_vec()).unwrap_or_default(),
@@ -596,10 +593,6 @@ impl<B, C, P, CT, BE, H: ExHashT> EthApiT for EthApi<B, C, P, CT, BE, H> where
 			},
 			chain_id: chain_id.map(|s| s.as_u64()),
 		};
-
-		if message.gas_price < U256::from(self.minimum_gas_price) {
-			return Box::new(future::result(Err(internal_err("gas price too low"))));
-		}
 
 		let mut transaction = None;
 
@@ -658,10 +651,6 @@ impl<B, C, P, CT, BE, H: ExHashT> EthApiT for EthApi<B, C, P, CT, BE, H> where
 				future::result(Err(internal_err("decode transaction failed")))
 			),
 		};
-
-		if transaction.gas_price < U256::from(self.minimum_gas_price) {
-			return Box::new(future::result(Err(internal_err("gas price too low"))));
-		}
 
 		let transaction_hash = H256::from_slice(
 			Keccak256::digest(&rlp::encode(&transaction)).as_slice()

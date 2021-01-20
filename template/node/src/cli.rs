@@ -25,9 +25,6 @@ pub struct RunCmd {
 
 	#[structopt(long = "enable-dev-signer")]
 	pub enable_dev_signer: bool,
-
-	#[structopt(long = "minimum_gas_price", default_value = "0")]
-	pub minimum_gas_price: u128,
 }
 
 #[derive(Debug, StructOpt)]
