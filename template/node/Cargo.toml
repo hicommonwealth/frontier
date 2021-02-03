@@ -42,6 +42,7 @@ sp-timestamp = { version = "*" }
 pallet-evm = { path = "../../frame/evm" }
 pallet-ethereum = { path = "../../frame/ethereum" }
 sc-finality-grandpa = { version = "*" }
+sp-finality-grandpa = { version = "*" }
 sc-client-api = { version = "*" }
 sp-runtime = { version = "*" }
 sc-basic-authorship = { version = "*" }
