@@ -47,6 +47,7 @@ sc-client-api = { version = "*" }
 sp-runtime = { version = "*" }
 sc-basic-authorship = { version = "*" }
 sp-block-builder = { version = "*" }
+sc-telemetry = { version = "*" }
 
 fc-consensus = { path = "../../client/consensus" }
 fp-consensus = { path = "../../primitives/consensus" }
