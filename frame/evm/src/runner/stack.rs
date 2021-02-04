@@ -53,10 +53,12 @@ impl<T: Config> Runner<T> {
 	) -> Result<ExecutionInfo<R>, Error<T>> where
 		F: FnOnce(&mut StackExecutor<'config, SubstrateStackState<'_, 'config, T>>) -> (ExitReason, R),
 	{
-		// Gas price check is skipped when performing a gas estimation.
 		let gas_price = match gas_price {
 			Some(gas_price) => {
-				ensure!(gas_price >= T::FeeCalculator::min_gas_price(), Error::<T>::GasPriceTooLow);
+				// Gas price check is skipped when performing a gas estimation.
+				if !config.estimate {
+					ensure!(gas_price >= T::FeeCalculator::min_gas_price(), Error::<T>::GasPriceTooLow);
+				}
 				gas_price
 			},
 			None => Default::default(),
@@ -77,14 +79,18 @@ impl<T: Config> Runner<T> {
 
 		let total_fee = gas_price.checked_mul(U256::from(gas_limit))
 			.ok_or(Error::<T>::FeeOverflow)?;
-		let total_payment = value.checked_add(total_fee).ok_or(Error::<T>::PaymentOverflow)?;
-		let source_account = Module::<T>::account_basic(&source);
-		ensure!(source_account.balance >= total_payment, Error::<T>::BalanceLow);
 
-		Module::<T>::withdraw_fee(&source, total_fee)?;
+		// skip withdrawal and nonce check when estimating
+		if !config.estimate {
+			let total_payment = value.checked_add(total_fee).ok_or(Error::<T>::PaymentOverflow)?;
+			let source_account = Module::<T>::account_basic(&source);
+			ensure!(source_account.balance >= total_payment, Error::<T>::BalanceLow);
 
-		if let Some(nonce) = nonce {
-			ensure!(source_account.nonce == nonce, Error::<T>::InvalidNonce);
+			Module::<T>::withdraw_fee(&source, total_fee)?;
+
+			if let Some(nonce) = nonce {
+				ensure!(source_account.nonce == nonce, Error::<T>::InvalidNonce);
+			}
 		}
 
 		let (reason, retv) = f(&mut executor);
@@ -101,34 +107,37 @@ impl<T: Config> Runner<T> {
 			actual_fee
 		);
 
-		Module::<T>::deposit_fee(&source, total_fee.saturating_sub(actual_fee));
-
 		let state = executor.into_state();
 
-		for address in state.substate.deletes {
-			debug::debug!(
-				target: "evm",
-				"Deleting account at {:?}",
-				address
-			);
-			Module::<T>::remove_account(&address)
-		}
+		// skip deposit, deletes, logging when estimating
+		if !config.estimate {
+			Module::<T>::deposit_fee(&source, total_fee.saturating_sub(actual_fee));
 
-		for log in &state.substate.logs {
-			debug::trace!(
-				target: "evm",
-				"Inserting log for {:?}, topics ({}) {:?}, data ({}): {:?}]",
-				log.address,
-				log.topics.len(),
-				log.topics,
-				log.data.len(),
-				log.data
-			);
-			Module::<T>::deposit_event(Event::<T>::Log(Log {
-				address: log.address,
-				topics: log.topics.clone(),
-				data: log.data.clone(),
-			}));
+			for address in state.substate.deletes {
+				debug::debug!(
+					target: "evm",
+					"Deleting account at {:?}",
+					address
+				);
+				Module::<T>::remove_account(&address)
+			}
+
+			for log in &state.substate.logs {
+				debug::trace!(
+					target: "evm",
+					"Inserting log for {:?}, topics ({}) {:?}, data ({}): {:?}]",
+					log.address,
+					log.topics.len(),
+					log.topics,
+					log.data.len(),
+					log.data
+				);
+				Module::<T>::deposit_event(Event::<T>::Log(Log {
+					address: log.address,
+					topics: log.topics.clone(),
+					data: log.data.clone(),
+				}));
+			}
 		}
 
 		Ok(ExecutionInfo {
