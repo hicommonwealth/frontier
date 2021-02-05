@@ -53,6 +53,14 @@ impl<T: Config> Runner<T> {
 	) -> Result<ExecutionInfo<R>, Error<T>> where
 		F: FnOnce(&mut StackExecutor<'config, SubstrateStackState<'_, 'config, T>>) -> (ExitReason, R),
 	{
+		debug::debug!(
+			target: "evm",
+			"Starting execute [source: {:?}, value: {}, nonce: {:?}]",
+			source,
+			value,
+			nonce
+		);
+
 		let gas_price = match gas_price {
 			Some(gas_price) => {
 				// Gas price check is skipped when performing a gas estimation.
@@ -87,7 +95,7 @@ impl<T: Config> Runner<T> {
 
 			debug::debug!(
 				target: "evm",
-				"Starting execution [source: {:?}, value: {}, gas_limit: {}, total_payment: {}, nonce: {}]",
+				"Checking execution asserts [source: {:?}, value: {}, gas_limit: {}, total_payment: {}, nonce: {}]",
 				source,
 				value,
 				gas_limit,
