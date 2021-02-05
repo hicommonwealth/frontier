@@ -26,7 +26,7 @@
 use frame_support::{
 	decl_module, decl_storage, decl_error, decl_event,
 	traits::Get, traits::FindAuthor, weights::Weight,
-	dispatch::DispatchResultWithPostInfo,
+	dispatch::DispatchResultWithPostInfo, debug,
 };
 use sp_std::prelude::*;
 use frame_system::ensure_none;
@@ -394,6 +394,13 @@ impl<T: Config> Module<T> {
 		action: TransactionAction,
 		config: Option<evm::Config>,
 	) -> Result<(Option<H160>, Option<H160>, CallOrCreateInfo), DispatchError> {
+		debug::debug!(
+			target: "evm",
+			"Got Ethereum crate execute [value: {:?}, gas_limit: {:?}, nonce: {:?}",
+			value,
+			gas_limit,
+			nonce,
+		);
 		match action {
 			ethereum::TransactionAction::Call(target) => {
 				let res = T::Runner::call(
