@@ -46,6 +46,7 @@ use crate::{internal_err, error_on_execution_failure, EthSigner, public_key};
 
 pub use fc_rpc_core::{EthApiServer, NetApiServer, Web3ApiServer, EthFilterApiServer};
 use codec::{self, Encode};
+use frame_support::{debug};
 
 pub struct EthApi<B: BlockT, C, P, CT, BE, H: ExHashT> {
 	pool: Arc<P>,
@@ -534,6 +535,14 @@ impl<B, C, P, CT, BE, H: ExHashT> EthApiT for EthApi<B, C, P, CT, BE, H> where
 				.map_err(|err| internal_err(format!("fetch runtime account basic failed: {:?}", err)))?
 				.nonce;
 
+			debug::debug!(
+				target: "evmrpc",
+				"Pending block {:?}: found nonce {:?} for {:?}",
+				number,
+				nonce,
+				address,
+			);
+
 			let mut current_nonce = nonce;
 			let mut current_tag = (address, nonce).encode();
 			for tx in self.pool.ready() {
@@ -542,13 +551,20 @@ impl<B, C, P, CT, BE, H: ExHashT> EthApiT for EthApi<B, C, P, CT, BE, H> where
 				if tx.provides().get(0) == Some(&current_tag) {
 					current_nonce = current_nonce.saturating_add(1.into());
 					current_tag = (address, current_nonce).encode();
+					debug::debug!(
+						target: "evmrpc",
+						"Pending block {:?}: found tx pool nonce {:?} for {:?}",
+						number,
+						current_nonce,
+						address,
+					);
 				}
 			}
 
 			return Ok(current_nonce);
 		}
 
-		let id = match self.native_block_id(number)? {
+		let id = match self.native_block_id(number.clone())? {
 			Some(id) => id,
 			None => return Ok(U256::zero()),
 		};
@@ -558,6 +574,13 @@ impl<B, C, P, CT, BE, H: ExHashT> EthApiT for EthApi<B, C, P, CT, BE, H> where
 			.map_err(|err| internal_err(format!("fetch runtime account basic failed: {:?}", err)))?
 			.nonce.into();
 
+		debug::debug!(
+			target: "evmrpc",
+			"Old block {:?}: found nonce {:?} for {:?}",
+			number,
+			nonce,
+			address,
+		);
 		Ok(nonce)
 	}
 
