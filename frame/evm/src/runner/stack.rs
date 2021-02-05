@@ -84,6 +84,17 @@ impl<T: Config> Runner<T> {
 		if !config.estimate {
 			let total_payment = value.checked_add(total_fee).ok_or(Error::<T>::PaymentOverflow)?;
 			let source_account = Module::<T>::account_basic(&source);
+
+			debug::debug!(
+				target: "evm",
+				"Starting execution [source: {:?}, value: {}, gas_limit: {}, total_payment: {}, nonce: {}]",
+				source,
+				value,
+				gas_limit,
+				total_payment,
+				source_account.nonce,
+			);
+
 			ensure!(source_account.balance >= total_payment, Error::<T>::BalanceLow);
 
 			Module::<T>::withdraw_fee(&source, total_fee)?;
@@ -92,19 +103,22 @@ impl<T: Config> Runner<T> {
 				ensure!(source_account.nonce == nonce, Error::<T>::InvalidNonce);
 			}
 		}
+		
 
 		let (reason, retv) = f(&mut executor);
 
 		let used_gas = U256::from(executor.used_gas());
 		let actual_fee = executor.fee(gas_price);
+		let source_account = Module::<T>::account_basic(&source);
 		debug::debug!(
 			target: "evm",
-			"Execution {:?} [source: {:?}, value: {}, gas_limit: {}, actual_fee: {}]",
+			"Execution {:?} [source: {:?}, value: {}, gas_limit: {}, actual_fee: {}, nonce: {}]",
 			reason,
 			source,
 			value,
 			gas_limit,
-			actual_fee
+			actual_fee,
+			source_account.nonce,
 		);
 
 		let state = executor.into_state();
